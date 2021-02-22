@@ -277,48 +277,6 @@ class Feeds extends Component {
             <Typography variant='h3'>$ { feed.priceToken0 ? feed.priceToken0 : '0.00' } </Typography>
           </div>
         }
-        { feed.volatility &&
-          <div className={ classes.volatilityHead }>
-            <Typography variant='h2'>Volatility</Typography>
-          </div>
-        }
-        { feed.volatility && feed.volatility.realizedVolatility && (!feed.volatility.realizedVolatilityHourly && !feed.volatility.realizedVolatilityDaily && !feed.volatility.realizedVolatilityWeekly) &&
-          <div className={ classes.volatility }>
-            <Typography variant='h3'>{ feed.volatility.realizedVolatility.toFixed(2) }%</Typography>
-          </div>
-        }
-        { feed.volatility && feed.volatility.realizedVolatilityHourly &&
-          <div className={ classes.volatility }>
-            <Typography variant='h3'>Hourly: { feed.volatility.realizedVolatilityHourly.toFixed(2) }%</Typography>
-          </div>
-        }
-        { feed.volatility && feed.volatility.realizedVolatilityDaily &&
-          <div className={ classes.volatility }>
-            <Typography variant='h3'>Daily: { feed.volatility.realizedVolatilityDaily.toFixed(2) }%</Typography>
-          </div>
-        }
-        { feed.volatility && !feed.volatility.realizedVolatility && !feed.volatility.realizedVolatilityHourly && !feed.volatility.realizedVolatilityDaily && !feed.volatility.realizedVolatilityWeekly &&
-          <div className={ classes.volatility }>
-            <Typography variant='h3'>Unknown</Typography>
-          </div>
-        }
-        { feed.quote &&
-          <div className={ classes.volatilityHead }>
-            <Typography variant='h2'>Options</Typography>
-          </div>
-        }
-        { feed.quote &&
-          <div className={ classes.volatility }>
-            { feed.quote.call != null && <Typography variant='h3'>Call: $ { feed.quote.call.toFixed(2) } </Typography> }
-            { feed.quote.call == null && <Typography variant='h3'>Call: Unknown</Typography> }
-          </div>
-        }
-        { feed.quote &&
-          <div className={ classes.volatility }>
-            { feed.quote.put != null && <Typography variant='h3'>Put: $ { feed.quote.put.toFixed(2) } </Typography> }
-            { feed.quote.put == null && <Typography variant='h3'>Put: Unknown</Typography> }
-          </div>
-        }
         { feed.lastUpdated &&
           <div className={ classes.updated }>
             <Typography variant='h6'>Last updated: { moment(feed.lastUpdated*1000).fromNow() }</Typography>
