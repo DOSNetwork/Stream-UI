@@ -240,13 +240,6 @@ class Feeds extends Component {
 
     return (
       <div className={ classes.feedContainer } key={ index } onClick={ feed.address ? () => { this.feedClicked(feed) } : null }>
-        { feed.type &&
-          <div className={ classes.pair }>
-            { feed.type === 'Coingecko' && <img src={require('../../assets/meta-sources/coingecko-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/> }
-            { feed.type === 'Coinbase' && <img src={require('../../assets/meta-sources/coinbase-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/> }
-            <Typography variant='h6'>{ feed.type }</Typography>
-          </div>
-        }
         { (!feed.description || !feed.lastPrice || !feed.twap1h) && <div className={ classes.skeletonFrame }>
             <Skeleton className={ classes.skeletonTitle } height={ 30 } />
             <Skeleton className={ classes.skeleton } />
@@ -263,8 +256,10 @@ class Feeds extends Component {
             <Skeleton className={ classes.skeletonTitle } />
           </div>
         }
-        { feed.description &&
+        { feed.type && feed.description &&
           <div className={ classes.pair }>
+            { feed.type === 'Coingecko' && <img src={require('../../assets/meta-sources/coingecko-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/> }
+            { feed.type === 'Coinbase' && <img src={require('../../assets/meta-sources/coinbase-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/> }
             <Typography variant='h2'>{ feed.description }</Typography>
           </div>
         }
