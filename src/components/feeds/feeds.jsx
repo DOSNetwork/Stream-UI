@@ -202,8 +202,8 @@ class Feeds extends Component {
           className={ classes.feedFilters }
           >
           <ToggleButton value="Uniswap" >
-            <img src={require('../../assets/tokens/UNI-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/>
-            <Typography variant='h3'>Uniswap</Typography>
+            <img src={require('../../assets/meta-sources/coingecko-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/>
+            <Typography variant='h3'>Coingecko</Typography>
           </ToggleButton>
           <ToggleButton value="Sushiswap">
             <img src={require('../../assets/tokens/SUSHI-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon } />
@@ -244,18 +244,12 @@ class Feeds extends Component {
       <div className={ classes.feedContainer } key={ index } onClick={ feed.address ? () => { this.feedClicked(feed) } : null }>
         { feed.type &&
           <div className={ classes.pair }>
-            { feed.type === 'Uniswap' && <img src={require('../../assets/tokens/UNI-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/> }
+            { feed.type === 'Uniswap' && <img src={require('../../assets/meta-sources/coingecko-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/> }
             { feed.type === 'Sushiswap' && <img src={require('../../assets/tokens/SUSHI-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/> }
             <Typography variant='h6'>{ feed.type }</Typography>
           </div>
         }
         { (!feed.token0 || !feed.token1) && <div className={ classes.skeletonFrame }>
-            <Skeleton className={ classes.skeletonTitle } height={ 30 } />
-            <Skeleton className={ classes.skeleton } />
-            <Skeleton className={ classes.skeleton } />
-            <Skeleton className={ classes.skeletonTitle } height={ 30 } />
-            <Skeleton className={ classes.skeleton } />
-            <Skeleton className={ classes.skeleton } />
             <Skeleton className={ classes.skeletonTitle } height={ 30 } />
             <Skeleton className={ classes.skeleton } />
             <Skeleton className={ classes.skeleton } />

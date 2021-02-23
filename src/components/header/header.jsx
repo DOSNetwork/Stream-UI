@@ -166,11 +166,11 @@ class Header extends Component {
 
   nav = (screen) => {
     if(screen === 'docs') {
-      window.open("https://docs.uniquote.finance/", "_blank")
+      window.open("https://dosnetwork.github.io/docs/#/", "_blank")
       return
     }
     if(screen === 'github') {
-      window.open("https://github.com/keep3r-network", "_blank")
+      window.open("https://github.com/DOSNetwork/smart-contracts", "_blank")
       return
     }
     this.props.history.push('/'+screen)

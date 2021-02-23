@@ -10,7 +10,6 @@ import {
 import { ERC20ABI } from "./abi/erc20ABI";
 import { UniswapV2PairABI } from './abi/uniswapV2PairABI';
 import { Keep3rV1OracleABI } from './abi/keep3rV1OracleABI'
-import { Keep3rV1VolatilityABI } from './abi/keep3rV1VolatilityABI'
 
 import Web3 from 'web3';
 const web3 = new Web3(config.provider)
@@ -191,9 +190,7 @@ class Store {
       const { version } = payload.content
 
       let contractAddress = config.keep3rOracleAddress
-      let volatilityContractAddress = config.keep3rVolatilityAddress
       if(version === 'Sushiswap') {
-        volatilityContractAddress = config.sushiVolatilityAddress
         contractAddress = config.sushiOracleAddress
       }
 
@@ -229,12 +226,6 @@ class Store {
 
         let lastUpdated = await this._getLastUpdated(pairPopulated, contractAddress)
         pairPopulated.lastUpdated = lastUpdated.timestamp
-
-        let volatility = await this._getVolatility(pairPopulated, volatilityContractAddress)
-        pairPopulated.volatility = volatility
-
-        let quote = await this._getQuotes(pairPopulated, volatilityContractAddress)
-        pairPopulated.quote = quote
 
         const usdPrice0 = usdPrices[pairPopulated.token0.price_id]
         const usdPrice1 = usdPrices[pairPopulated.token1.price_id]
@@ -384,60 +375,6 @@ class Store {
       return lastUpdated
     } catch(e) {
       return { timestamp: 0 }
-    }
-  }
-
-  _getVolatility = async (pair, volatilityContractAddress) => {
-    const keep3rVolatilityContract = new web3.eth.Contract(Keep3rV1VolatilityABI, volatilityContractAddress)
-
-    try {
-      const realizedVolatilityHourly = await keep3rVolatilityContract.methods.rVol(pair.token0.address, pair.token1.address, 4, 24).call({ })
-      const realizedVolatilityDaily = await keep3rVolatilityContract.methods.rVol(pair.token0.address, pair.token1.address, 4, 48).call({ })
-      const realizedVolatilityWeekly = realizedVolatilityDaily
-
-      return {
-        realizedVolatilityHourly: realizedVolatilityHourly/1e18*100,
-        realizedVolatilityDaily: realizedVolatilityDaily/1e18*100,
-        realizedVolatilityWeekly: realizedVolatilityWeekly/1e18*100 }
-    } catch(e) {
-      console.log(e)
-
-      try {
-        const realizedVolatility = await keep3rVolatilityContract.methods.rVol(pair.token0.address, pair.token1.address, 12, 2).call({ })
-
-        return {
-          realizedVolatility: realizedVolatility/1e18*100,
-          realizedVolatilityHourly: null,
-          realizedVolatilityDaily: null,
-          realizedVolatilityWeekly: null,
-        }
-      } catch(ex) {
-        console.log(ex)
-        return {
-          realizedVolatility: null,
-          realizedVolatilityHourly: null,
-          realizedVolatilityDaily: null,
-          realizedVolatilityWeekly: null,
-          err: ex
-        }
-      }
-    }
-  }
-
-  _getQuotes = async (pair, volatilityContractAddress) => {
-    const keep3rVolatilityContract = new web3.eth.Contract(Keep3rV1VolatilityABI, volatilityContractAddress)
-
-    try {
-      const quote = await keep3rVolatilityContract.methods.quote(pair.token0.address, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 7).call({ })
-      return {
-        call: quote.call/1e18,
-        put: quote.put/1e18
-      }
-    } catch(e) {
-      return {
-        call: null,
-        put: null
-      }
     }
   }
 
