@@ -11,6 +11,7 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
 import Store from "../../stores";
 import { colors } from '../../theme'
+import config from "../../stores/config"
 
 import {
   GET_FEEDS,
@@ -69,12 +70,12 @@ const styles = theme => ({
     display: 'flex',
     alignItems: 'center',
   },
-  volatilityHead: {
+  twapHead: {
     marginTop: '24px',
     marginBottom: '6px',
     zIndex: 1
   },
-  volatility: {
+  twap: {
     margin: '6px 0px',
     zIndex: 1
   },
@@ -129,19 +130,19 @@ class Feeds extends Component {
   constructor(props) {
     super()
 
-    const uniFeeds = store.getStore('uniFeeds')
-    const sushiFeeds = store.getStore('sushiFeeds')
+    const coingeckoFeeds = store.getStore('coingeckoFeeds')
+    const coinbaseFeeds = store.getStore('coinbaseFeeds')
 
     this.state = {
-      uniFeeds: uniFeeds,
-      sushiFeeds: sushiFeeds,
-      feeds: [ ...uniFeeds, ...sushiFeeds],
+      coingeckoFeeds: coingeckoFeeds,
+      coinbaseFeeds: coinbaseFeeds,
+      feeds: [...coingeckoFeeds, ...coinbaseFeeds],
       feedFilter: null,
 
     }
 
-    dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Uniswap' } })
-    dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Sushiswap' } })
+    dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Coingecko' } })
+    dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Coinbase' } })
   };
 
   componentWillMount() {
@@ -155,13 +156,13 @@ class Feeds extends Component {
   };
 
   feedsReturned = () => {
-    const uniFeeds = store.getStore('uniFeeds')
-    const sushiFeeds = store.getStore('sushiFeeds')
+    const coingeckoFeeds = store.getStore('coingeckoFeeds')
+    const coinbaseFeeds = store.getStore('coinbaseFeeds')
 
     this.setState({
-      uniFeeds: uniFeeds,
-      sushiFeeds: sushiFeeds,
-      feeds: [ ...uniFeeds, ...sushiFeeds]
+      coingeckoFeeds: coingeckoFeeds,
+      coinbaseFeeds: coinbaseFeeds,
+      feeds: [...coingeckoFeeds, ...coinbaseFeeds]
     })
   }
 
@@ -170,12 +171,11 @@ class Feeds extends Component {
   }
 
   feedClicked = (feed) => {
-    if(feed.type === 'Uniswap') {
-      window.open('https://info.uniswap.org/pair/'+feed.address, '_blank')
-    } else {
-      window.open('https://www.sushiswap.fi/pair/'+feed.address, '_blank')
+    if (feed.type === 'Coingecko') {
+      window.open(config.explorerUrl + 'address/' + feed.address, '_blank')
+    } else if (feed.type === 'Coinbase') {
+      window.open('https://www.coinbase.com', '_blank')
     }
-
   }
 
   render() {
@@ -201,13 +201,13 @@ class Feeds extends Component {
           onChange={ this.onFeedFilterChanged }
           className={ classes.feedFilters }
           >
-          <ToggleButton value="Uniswap" >
+          <ToggleButton value="Coingecko" >
             <img src={require('../../assets/meta-sources/coingecko-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/>
             <Typography variant='h3'>Coingecko</Typography>
           </ToggleButton>
-          <ToggleButton value="Sushiswap">
-            <img src={require('../../assets/tokens/SUSHI-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon } />
-            <Typography variant='h3'>Sushiswap</Typography>
+          <ToggleButton value="Coinbase">
+            <img src={require('../../assets/meta-sources/coinbase-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon } />
+            <Typography variant='h3'>Coinbase</Typography>
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
@@ -244,31 +244,85 @@ class Feeds extends Component {
       <div className={ classes.feedContainer } key={ index } onClick={ feed.address ? () => { this.feedClicked(feed) } : null }>
         { feed.type &&
           <div className={ classes.pair }>
-            { feed.type === 'Uniswap' && <img src={require('../../assets/meta-sources/coingecko-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/> }
-            { feed.type === 'Sushiswap' && <img src={require('../../assets/tokens/SUSHI-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/> }
+            { feed.type === 'Coingecko' && <img src={require('../../assets/meta-sources/coingecko-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/> }
+            { feed.type === 'Coinbase' && <img src={require('../../assets/meta-sources/coinbase-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/> }
             <Typography variant='h6'>{ feed.type }</Typography>
           </div>
         }
-        { (!feed.token0 || !feed.token1) && <div className={ classes.skeletonFrame }>
+        { (!feed.description || !feed.lastPrice || !feed.twap1h) && <div className={ classes.skeletonFrame }>
             <Skeleton className={ classes.skeletonTitle } height={ 30 } />
+            <Skeleton className={ classes.skeleton } />
+            <Skeleton className={ classes.skeleton } />
+            <Skeleton className={ classes.skeleton } />
+            <Skeleton className={ classes.skeletonTitle } height={ 30 } />
+            <Skeleton className={ classes.skeleton } />
+            <Skeleton className={ classes.skeleton } />
+            <Skeleton className={ classes.skeleton } />
+            <Skeleton className={ classes.skeleton } />
+            <Skeleton className={ classes.skeleton } />
             <Skeleton className={ classes.skeleton } />
             <Skeleton className={ classes.skeleton } />
             <Skeleton className={ classes.skeletonTitle } />
           </div>
         }
-        { feed.token0 && feed.token1 &&
+        { feed.description &&
           <div className={ classes.pair }>
-            <Typography variant='h2'>{ feed.token0.symbol } / { feed.token1.symbol }</Typography>
+            <Typography variant='h2'>{ feed.description }</Typography>
           </div>
         }
-        { feed.token0 && feed.token1 &&
+        { feed.lastPrice &&
           <div className={ classes.pricePoint }>
-            <Typography variant='h3'>{ feed.consult && feed.consult.consult0To1 ? feed.consult.consult0To1.toFixed(4) : '0.00' } ETH</Typography>
+            <Typography variant='h3'>$ { feed.lastPrice } </Typography>
           </div>
         }
-        { feed.token0 && feed.token1 &&
+        { feed.numPoints &&
           <div className={ classes.pricePoint }>
-            <Typography variant='h3'>$ { feed.priceToken0 ? feed.priceToken0 : '0.00' } </Typography>
+            <Typography variant='h3'>{ feed.numPoints } Data Points </Typography>
+          </div>
+        }
+        { feed.deviation &&
+          <div className={ classes.pricePoint }>
+            <Typography variant='h3'>{ feed.deviation / 10 }% Update Threshold</Typography>
+          </div>
+        }
+        { feed.twap1h > 0 &&
+          <div className={ classes.twapHead }>
+            <Typography variant='h2'>TWAP Results</Typography>
+          </div>
+        }
+        { feed.twap1h > 0 &&
+          <div className={ classes.twap }>
+            <Typography variant='h6'>1 hour TWAP: $ { feed.twap1h } </Typography>
+          </div>
+        }
+        { feed.twap2h > 0 &&
+          <div className={ classes.twap }>
+            <Typography variant='h6'>2 hour TWAP: $ { feed.twap2h } </Typography>
+          </div>
+        }
+        { feed.twap4h > 0 &&
+          <div className={ classes.twap }>
+            <Typography variant='h6'>4 hour TWAP: $ { feed.twap4h } </Typography>
+          </div>
+        }
+        { feed.twap6h > 0 &&
+          <div className={ classes.twap }>
+            <Typography variant='h6'>6 hour TWAP: $ { feed.twap6h } </Typography>
+          </div>
+        }
+        { feed.twap8h > 0 &&
+          <div className={ classes.twap }>
+            <Typography variant='h6'>8 hour TWAP: $ { feed.twap8h } </Typography>
+          </div>
+        }
+        { feed.twap12h > 0 &&
+          <div className={ classes.twap }>
+            <Typography variant='h6'>12 hour TWAP: $ { feed.twap12h } </Typography>
+          </div>
+        }
+        { feed.twap1d > 0 &&
+          <div className={ classes.twap }>
+            <Typography variant='h6'>1 Day TWAP: $ { feed.twap1d } </Typography>
           </div>
         }
         { feed.lastUpdated &&

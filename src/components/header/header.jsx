@@ -140,10 +140,10 @@ class Header extends Component {
       <div className={ classes.root }>
         <div className={ classes.headerV2 }>
           <div className={ classes.links }>
-            { this.renderLink('feeds') }
-            { this.renderLink('contracts') }
-            { this.renderLink('docs') }
-            { this.renderLink('github') }
+            { this.renderLink('Streams') }
+            { this.renderLink('Contracts') }
+            { this.renderLink('Docs') }
+            { this.renderLink('Github') }
           </div>
           <div className={ classes.account }>
           </div>
@@ -165,11 +165,11 @@ class Header extends Component {
   }
 
   nav = (screen) => {
-    if(screen === 'docs') {
+    if(screen === 'Docs') {
       window.open("https://dosnetwork.github.io/docs/#/", "_blank")
       return
     }
-    if(screen === 'github') {
+    if(screen === 'Github') {
       window.open("https://github.com/DOSNetwork/smart-contracts", "_blank")
       return
     }

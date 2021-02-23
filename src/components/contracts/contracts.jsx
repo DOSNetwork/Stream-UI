@@ -65,19 +65,17 @@ class Contracts extends Component {
   constructor(props) {
     super()
 
-    const uniFeeds = store.getStore('uniFeeds')
-    const sushiFeeds = store.getStore('sushiFeeds')
-    const assets = store.getStore('assets')
+    const coingeckoFeeds = store.getStore('coingeckoFeeds')
+    const coinbaseFeeds = store.getStore('coinbaseFeeds')
 
     this.state = {
-      uniFeeds: uniFeeds,
-      sushiFeeds: sushiFeeds,
-      feeds: [ ...uniFeeds, ...sushiFeeds],
-      assets: assets
+      coingeckoFeeds: coingeckoFeeds,
+      coinbaseFeeds: coinbaseFeeds,
+      feeds: [ ...coingeckoFeeds, ...coinbaseFeeds],
     }
 
-    dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Uniswap' } })
-    dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Sushiswap' } })
+    dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Coingecko' } })
+    dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Coinbase' } })
   };
 
   componentWillMount() {
@@ -91,20 +89,18 @@ class Contracts extends Component {
   };
 
   feedsReturned = () => {
-    const uniFeeds = store.getStore('uniFeeds')
-    const sushiFeeds = store.getStore('sushiFeeds')
-    const assets = store.getStore('assets')
+    const coingeckoFeeds = store.getStore('coingeckoFeeds')
+    const coinbaseFeeds = store.getStore('coinbaseFeeds')
 
     this.setState({
-      uniFeeds: uniFeeds,
-      sushiFeeds: sushiFeeds,
-      feeds: [ ...uniFeeds, ...sushiFeeds],
-      assets: assets
+      coingeckoFeeds: coingeckoFeeds,
+      coinbaseFeeds: coinbaseFeeds,
+      feeds: [ ...coingeckoFeeds, ...coinbaseFeeds],
     })
   }
 
   contractClicked = (contract) => {
-    window.open('https://etherscan.io/address/'+contract, '_blank')
+    window.open(config.explorerUrl + 'address/' + contract, '_blank')
   }
 
   renderQuoteContracts = () => {
@@ -113,21 +109,15 @@ class Contracts extends Component {
     return (
       <div className={ classes.contractsContainer }>
         <div className={ classes.contractContainer }>
-          <Typography variant='h3' className={ classes.contractName }>UniswapKeep3rV1Oracle </Typography>
-          <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(config.keep3rOracleAddress) } }>{ config.keep3rOracleAddress }</Typography>
+          <Typography variant='h3' className={ classes.contractName }>CoingeckoDataStreams </Typography>
+          <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(config.CoingeckoStreamsManagerAddress) } }>{ config.CoingeckoStreamsManagerAddress }</Typography>
         </div>
-        <div className={ classes.contractContainer }>
-          <Typography variant='h3' className={ classes.contractName }>UniswapKeep3rV1Volatility </Typography>
-          <Typography variant='h3' className={ classes.contractAddress } color='textSecondary' onClick={ () => { this.contractClicked(config.keep3rVolatilityAddress) } }>{ config.keep3rVolatilityAddress }</Typography>
-        </div>
-        <div className={ classes.contractContainer }>
-          <Typography variant='h3' className={ classes.contractName }>SushiswapKeep3rV1Oracle </Typography>
-          <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(config.sushiOracleAddress) } }>{ config.sushiOracleAddress }</Typography>
-        </div>
-        <div className={ classes.contractContainer }>
-          <Typography variant='h3' className={ classes.contractName }>SushiswapKeep3rV1Volatility </Typography>
-          <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(config.sushiVolatilityAddress) } }>{ config.sushiVolatilityAddress }</Typography>
-        </div>
+        {config.CoinbaseStreamsManagerAddress &&
+          <div className={ classes.contractContainer }>
+            <Typography variant='h3' className={ classes.contractName }>CoinbaseDataStreams </Typography>
+            <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(config.CoinbaseStreamsManagerAddress) } }>{ config.CoinbaseStreamsManagerAddress }</Typography>
+          </div>
+        }
       </div>
     )
   }
@@ -142,28 +132,8 @@ class Contracts extends Component {
           feeds && feeds.map((feed) => {
             return (
               <div className={ classes.contractContainer }>
-                { (feed && feed.token0) ? <Typography variant='h3' className={ classes.contractName }>{ feed.type } - { feed.token0.symbol } / { feed.token1.symbol }</Typography> : <Skeleton className={ classes.skeleton } />  }
-                { (feed && feed.token0) ? <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(feed.address) } }>{ feed.address }</Typography> : <Skeleton className={ classes.skeleton } /> }
-              </div>
-            )
-          })
-        }
-      </div>
-    )
-  }
-
-  renderTokenContracts = () => {
-    const { classes } = this.props;
-    const { assets } = this.state
-
-    return (
-      <div className={ classes.contractsContainer }>
-        {
-          assets && assets.map((asset) => {
-            return (
-              <div className={ classes.contractContainer }>
-                <Typography variant='h3' className={ classes.contractName }>{ asset.symbol }</Typography>
-                <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(asset.address) } }>{ asset.address }</Typography>
+                { (feed && feed.description && feed.type) ? <Typography variant='h3' className={ classes.contractName }>{ feed.type } - { feed.description }</Typography> : <Skeleton className={ classes.skeleton } />  }
+                { (feed && feed.address) ? <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(feed.address) } }>{ feed.address }</Typography> : <Skeleton className={ classes.skeleton } /> }
               </div>
             )
           })
@@ -177,12 +147,10 @@ class Contracts extends Component {
 
     return (
       <div className={ classes.root }>
-        <Typography variant='h1' className={ classes.title }>Quote Addresses</Typography>
+        <Typography variant='h1' className={ classes.title }>StreamsManager Addresses</Typography>
         { this.renderQuoteContracts() }
-        <Typography variant='h1' className={ classes.title }>Pair Addresses</Typography>
+        <Typography variant='h1' className={ classes.title }>Stream Addresses</Typography>
         { this.renderFeedContracts() }
-        <Typography variant='h1' className={ classes.title }>Token Addresses</Typography>
-        { this.renderTokenContracts() }
       </div>
     )
   }
