@@ -129,7 +129,6 @@ class Store {
           store.setStore({ coinbaseFeeds: streamsData })
         }
 
-        console.log(streamsData);
         emitter.emit(FEEDS_RETURNED)
       })
     } catch(e) {

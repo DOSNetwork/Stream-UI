@@ -224,8 +224,6 @@ class Feeds extends Component {
       return <div></div>
     }
 
-    console.log(feedFilter)
-
     return feeds.filter((feed) => {
       if(!feedFilter) {
         return true
