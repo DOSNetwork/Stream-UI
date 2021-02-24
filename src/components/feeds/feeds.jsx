@@ -256,16 +256,15 @@ class Feeds extends Component {
             <Skeleton className={ classes.skeletonTitle } />
           </div>
         }
-        { feed.type && feed.description &&
+        { feed.description && feed.logoPrefix &&
           <div className={ classes.pair }>
-            { feed.type === 'Coingecko' && <img src={require('../../assets/meta-sources/coingecko-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/> }
-            { feed.type === 'Coinbase' && <img src={require('../../assets/meta-sources/coinbase-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/> }
+            <img src={require('../../assets/cryptos/' + feed.logoPrefix + '.png')} alt={ feed.logoPrefix } width={ 30 } height={ 30 } className={ classes.productIcon }/>
             <Typography variant='h2'>{ feed.description }</Typography>
           </div>
         }
         { feed.lastPrice &&
           <div className={ classes.pricePoint }>
-            <Typography variant='h3'>$ { feed.lastPrice } </Typography>
+            <Typography variant='h3'>$ { feed.lastPrice > 0 ? feed.lastPrice : 'N/A' } </Typography>
           </div>
         }
         { feed.numPoints &&
@@ -278,49 +277,49 @@ class Feeds extends Component {
             <Typography variant='h3'>{ feed.deviation / 10 }% Update Threshold</Typography>
           </div>
         }
-        { feed.twap1h > 0 &&
+        { feed.twap1h &&
           <div className={ classes.twapHead }>
             <Typography variant='h2'>TWAP Results</Typography>
           </div>
         }
-        { feed.twap1h > 0 &&
+        { feed.twap1h &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>1 hour TWAP: $ { feed.twap1h } </Typography>
+            <Typography variant='h6'>1 hour TWAP: $ { feed.twap1h > 0 ? feed.twap1h : 'N/A' } </Typography>
           </div>
         }
-        { feed.twap2h > 0 &&
+        { feed.twap2h &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>2 hour TWAP: $ { feed.twap2h } </Typography>
+            <Typography variant='h6'>2 hour TWAP: $ { feed.twap2h > 0 ? feed.twap2h : 'N/A' } </Typography>
           </div>
         }
-        { feed.twap4h > 0 &&
+        { feed.twap4h &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>4 hour TWAP: $ { feed.twap4h } </Typography>
+            <Typography variant='h6'>4 hour TWAP: $ { feed.twap4h > 0 ? feed.twap4h : 'N/A' } </Typography>
           </div>
         }
-        { feed.twap6h > 0 &&
+        { feed.twap6h &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>6 hour TWAP: $ { feed.twap6h } </Typography>
+            <Typography variant='h6'>6 hour TWAP: $ { feed.twap6h > 0 ? feed.twap6h : 'N/A' } </Typography>
           </div>
         }
-        { feed.twap8h > 0 &&
+        { feed.twap8h &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>8 hour TWAP: $ { feed.twap8h } </Typography>
+            <Typography variant='h6'>8 hour TWAP: $ { feed.twap8h > 0 ? feed.twap8h : 'N/A' } </Typography>
           </div>
         }
-        { feed.twap12h > 0 &&
+        { feed.twap12h &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>12 hour TWAP: $ { feed.twap12h } </Typography>
+            <Typography variant='h6'>12 hour TWAP: $ { feed.twap12h > 0 ? feed.twap12h : 'N/A' } </Typography>
           </div>
         }
-        { feed.twap1d > 0 &&
+        { feed.twap1d &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>1 Day TWAP: $ { feed.twap1d } </Typography>
+            <Typography variant='h6'>1 Day TWAP: $ { feed.twap1d > 0 ? feed.twap1d : 'N/A' } </Typography>
           </div>
         }
         { feed.lastUpdated &&
           <div className={ classes.updated }>
-            <Typography variant='h6'>Last updated: { moment(feed.lastUpdated*1000).fromNow() }</Typography>
+            <Typography variant='h6'>Last updated: { feed.lastUpdated > 0 ? moment(feed.lastUpdated*1000).fromNow() : 'N/A' }</Typography>
           </div>
         }
       </div>

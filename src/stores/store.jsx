@@ -103,7 +103,7 @@ class Store {
         streamPopulated.type = version
         let latestResult = await this._polulateLatestResult(streamsManagerContract, stream)
         streamPopulated.lastPrice = (latestResult.price / (10 ** streamPopulated.decimal)).toFixed(2)
-        streamPopulated.lastUpdated = latestResult.timestamp
+        streamPopulated.lastUpdated = String(latestResult.timestamp)
         let twaps = await this._polulateTWAPResults(streamsManagerContract, stream)
         streamPopulated.twap1h = (twaps.twap1h / (10 ** streamPopulated.decimal)).toFixed(2)
         streamPopulated.twap2h = (twaps.twap2h / (10 ** streamPopulated.decimal)).toFixed(2)
@@ -139,14 +139,16 @@ class Store {
 
   _polulateStreamData = async (streamsManagerContract, streamAddr) => {
     try {
-      let streamData = {
+      let s = {
         description: await streamsManagerContract.methods.description(streamAddr).call(),
         decimal: await streamsManagerContract.methods.decimal(streamAddr).call(),
         windowSize: await streamsManagerContract.methods.windowSize(streamAddr).call(),
         deviation: await streamsManagerContract.methods.deviation(streamAddr).call(),
         numPoints: await streamsManagerContract.methods.numPoints(streamAddr).call(),
       }
-      return streamData
+      // Assuming description in the format of 'BTC / USD'
+      s.logoPrefix = s.description.substr(0, s.description.indexOf(' ')).toLowerCase()
+      return s
     } catch(ex) {
       console.log(ex)
       console.log(streamAddr)
@@ -156,6 +158,7 @@ class Store {
         windowSize: null,
         deviation: null,
         numPoints: null,
+        logoPrefix: null,
         error: ex
       }
     }
