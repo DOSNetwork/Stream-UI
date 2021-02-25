@@ -66,16 +66,16 @@ class Contracts extends Component {
     super()
 
     const coingeckoFeeds = store.getStore('coingeckoFeeds')
-    const coinbaseFeeds = store.getStore('coinbaseFeeds')
+    const stockFeeds = store.getStore('stockFeeds')
 
     this.state = {
       coingeckoFeeds: coingeckoFeeds,
-      coinbaseFeeds: coinbaseFeeds,
-      feeds: [ ...coingeckoFeeds, ...coinbaseFeeds],
+      stockFeeds: stockFeeds,
+      feeds: [ ...coingeckoFeeds, ...stockFeeds],
     }
 
     dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Coingecko' } })
-    dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Coinbase' } })
+    dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Stock' } })
   };
 
   componentWillMount() {
@@ -90,12 +90,12 @@ class Contracts extends Component {
 
   feedsReturned = () => {
     const coingeckoFeeds = store.getStore('coingeckoFeeds')
-    const coinbaseFeeds = store.getStore('coinbaseFeeds')
+    const stockFeeds = store.getStore('stockFeeds')
 
     this.setState({
       coingeckoFeeds: coingeckoFeeds,
-      coinbaseFeeds: coinbaseFeeds,
-      feeds: [ ...coingeckoFeeds, ...coinbaseFeeds],
+      stockFeeds: stockFeeds,
+      feeds: [ ...coingeckoFeeds, ...stockFeeds],
     })
   }
 
@@ -109,13 +109,13 @@ class Contracts extends Component {
     return (
       <div className={ classes.contractsContainer }>
         <div className={ classes.contractContainer }>
-          <Typography variant='h3' className={ classes.contractName }>CoingeckoDataStreams </Typography>
+          <Typography variant='h3' className={ classes.contractName }>CoingeckoDataStreamsManager </Typography>
           <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(config.CoingeckoStreamsManagerAddress) } }>{ config.CoingeckoStreamsManagerAddress }</Typography>
         </div>
-        {config.CoinbaseStreamsManagerAddress &&
+        {config.StockStreamsManagerAddress &&
           <div className={ classes.contractContainer }>
-            <Typography variant='h3' className={ classes.contractName }>CoinbaseDataStreams </Typography>
-            <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(config.CoinbaseStreamsManagerAddress) } }>{ config.CoinbaseStreamsManagerAddress }</Typography>
+            <Typography variant='h3' className={ classes.contractName }>StockDataStreamsManager </Typography>
+            <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(config.StockStreamsManagerAddress) } }>{ config.StockStreamsManagerAddress }</Typography>
           </div>
         }
       </div>

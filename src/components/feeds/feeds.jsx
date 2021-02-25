@@ -131,18 +131,18 @@ class Feeds extends Component {
     super()
 
     const coingeckoFeeds = store.getStore('coingeckoFeeds')
-    const coinbaseFeeds = store.getStore('coinbaseFeeds')
+    const stockFeeds = store.getStore('stockFeeds')
 
     this.state = {
       coingeckoFeeds: coingeckoFeeds,
-      coinbaseFeeds: coinbaseFeeds,
-      feeds: [...coingeckoFeeds, ...coinbaseFeeds],
+      stockFeeds: stockFeeds,
+      feeds: [...coingeckoFeeds, ...stockFeeds],
       feedFilter: null,
 
     }
 
     dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Coingecko' } })
-    dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Coinbase' } })
+    dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Stock' } })
   };
 
   componentWillMount() {
@@ -157,12 +157,12 @@ class Feeds extends Component {
 
   feedsReturned = () => {
     const coingeckoFeeds = store.getStore('coingeckoFeeds')
-    const coinbaseFeeds = store.getStore('coinbaseFeeds')
+    const stockFeeds = store.getStore('stockFeeds')
 
     this.setState({
       coingeckoFeeds: coingeckoFeeds,
-      coinbaseFeeds: coinbaseFeeds,
-      feeds: [...coingeckoFeeds, ...coinbaseFeeds]
+      stockFeeds: stockFeeds,
+      feeds: [...coingeckoFeeds, ...stockFeeds]
     })
   }
 
@@ -173,8 +173,8 @@ class Feeds extends Component {
   feedClicked = (feed) => {
     if (feed.type === 'Coingecko') {
       window.open(config.explorerUrl + 'address/' + feed.address, '_blank')
-    } else if (feed.type === 'Coinbase') {
-      window.open('https://www.coinbase.com', '_blank')
+    } else if (feed.type === 'Stock') {
+      window.open('https://www.stock.com', '_blank')
     }
   }
 
@@ -203,12 +203,21 @@ class Feeds extends Component {
           >
           <ToggleButton value="Coingecko" >
             <img src={require('../../assets/meta-sources/coingecko-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/>
-            <Typography variant='h3'>Coingecko</Typography>
+            <Typography variant='h3'>Crypto</Typography>
           </ToggleButton>
-          <ToggleButton value="Coinbase">
-            <img src={require('../../assets/meta-sources/coinbase-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon } />
-            <Typography variant='h3'>Coinbase</Typography>
+          <ToggleButton value="Stock">
+            <img src={require('../../assets/meta-sources/stock-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon } />
+            <Typography variant='h3'>Stock</Typography>
           </ToggleButton>
+          <ToggleButton value="Forex">
+            <img src={require('../../assets/meta-sources/forex-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon } />
+            <Typography variant='h3'>Forex</Typography>
+          </ToggleButton>
+          <ToggleButton value="Commodity">
+            <img src={require('../../assets/meta-sources/commodity-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon } />
+            <Typography variant='h3'>Commodity</Typography>
+          </ToggleButton>
+
         </ToggleButtonGroup>
       </div>
     )

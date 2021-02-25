@@ -29,7 +29,7 @@ class Store {
       coingeckoFeeds: [
 
       ],
-      coinbaseFeeds: [
+      stockFeeds: [
 
       ],
     }
@@ -74,8 +74,8 @@ class Store {
       let contractAddress;
       if (version === 'Coingecko') {
         contractAddress = config.CoingeckoStreamsManagerAddress
-      } else if (version === 'Coinbase') {
-        // contractAddress = config.CoinbaseStreamsManagerAddress
+      } else if (version === 'Stock') {
+        // contractAddress = config.StockStreamsManagerAddress
       }
       
       const streamsManagerContract = new web3HecoTest.eth.Contract(StreamsManagerABI, contractAddress)
@@ -91,9 +91,9 @@ class Store {
           store.setStore({ coingeckoFeeds: streams })
           emitter.emit(FEEDS_UPDATED)
         }
-      } else if (version === 'Coinbase') {
-        if(store.getStore('coinbaseFeeds').length === 0) {
-          store.setStore({ coinbaseFeeds: streams })
+      } else if (version === 'Stock') {
+        if(store.getStore('stockFeeds').length === 0) {
+          store.setStore({ stockFeeds: streams })
           emitter.emit(FEEDS_UPDATED)
         }
       }
@@ -125,8 +125,8 @@ class Store {
 
         if(version === 'Coingecko') {
           store.setStore({ coingeckoFeeds: streamsData })
-        } else if (version === 'Coinbase'){
-          store.setStore({ coinbaseFeeds: streamsData })
+        } else if (version === 'Stock'){
+          store.setStore({ stockFeeds: streamsData })
         }
 
         emitter.emit(FEEDS_RETURNED)
