@@ -249,7 +249,7 @@ class Feeds extends Component {
 
     return (
       <div className={ classes.feedContainer } key={ index } onClick={ feed.address ? () => { this.feedClicked(feed) } : null }>
-        { (!feed.description || !feed.lastPrice || !feed.twap1h) && <div className={ classes.skeletonFrame }>
+        { (!feed.description || !feed.lastPrice || !feed.decimal || !feed.twap1h) && <div className={ classes.skeletonFrame }>
             <Skeleton className={ classes.skeletonTitle } height={ 30 } />
             <Skeleton className={ classes.skeleton } />
             <Skeleton className={ classes.skeleton } />
