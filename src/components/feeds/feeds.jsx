@@ -264,7 +264,7 @@ class Feeds extends Component {
         }
         { feed.lastPrice &&
           <div className={ classes.pricePoint }>
-            <Typography variant='h3'>$ { feed.lastPrice > 0 ? feed.lastPrice : 'N/A' } </Typography>
+            <Typography variant='h3'>{ feed.lastPrice > 0 ? '$ ' + feed.lastPrice : 'N/A' } </Typography>
           </div>
         }
         { feed.numPoints &&
@@ -284,37 +284,37 @@ class Feeds extends Component {
         }
         { feed.twap1h &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>1 hour TWAP: $ { feed.twap1h > 0 ? feed.twap1h : 'N/A' } </Typography>
+            <Typography variant='h6'>1 hour TWAP: { feed.twap1h > 0 ? '$ ' + feed.twap1h : 'N/A' } </Typography>
           </div>
         }
         { feed.twap2h &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>2 hour TWAP: $ { feed.twap2h > 0 ? feed.twap2h : 'N/A' } </Typography>
+            <Typography variant='h6'>2 hour TWAP: { feed.twap2h > 0 ? '$ ' + feed.twap2h : 'N/A' } </Typography>
           </div>
         }
         { feed.twap4h &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>4 hour TWAP: $ { feed.twap4h > 0 ? feed.twap4h : 'N/A' } </Typography>
+            <Typography variant='h6'>4 hour TWAP: { feed.twap4h > 0 ? '$ ' + feed.twap4h : 'N/A' } </Typography>
           </div>
         }
         { feed.twap6h &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>6 hour TWAP: $ { feed.twap6h > 0 ? feed.twap6h : 'N/A' } </Typography>
+            <Typography variant='h6'>6 hour TWAP: { feed.twap6h > 0 ? '$ ' + feed.twap6h : 'N/A' } </Typography>
           </div>
         }
         { feed.twap8h &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>8 hour TWAP: $ { feed.twap8h > 0 ? feed.twap8h : 'N/A' } </Typography>
+            <Typography variant='h6'>8 hour TWAP: { feed.twap8h > 0 ? '$ ' + feed.twap8h : 'N/A' } </Typography>
           </div>
         }
         { feed.twap12h &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>12 hour TWAP: $ { feed.twap12h > 0 ? feed.twap12h : 'N/A' } </Typography>
+            <Typography variant='h6'>12 hour TWAP: { feed.twap12h > 0 ? '$ ' + feed.twap12h : 'N/A' } </Typography>
           </div>
         }
         { feed.twap1d &&
           <div className={ classes.twap }>
-            <Typography variant='h6'>1 Day TWAP: $ { feed.twap1d > 0 ? feed.twap1d : 'N/A' } </Typography>
+            <Typography variant='h6'>1 Day TWAP: { feed.twap1d > 0 ? '$ ' + feed.twap1d : 'N/A' } </Typography>
           </div>
         }
         { feed.lastUpdated &&

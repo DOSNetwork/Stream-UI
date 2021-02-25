@@ -39,6 +39,7 @@ const styles = theme => ({
     justifyContent: 'center'
   },
   link: {
+    display: 'flex',
     padding: '12px 0px',
     margin: '0px 12px',
     cursor: 'pointer',
@@ -50,7 +51,11 @@ const styles = theme => ({
   title: {
     textTransform: 'capitalize'
   },
+  productIcon: {
+    marginRight: '8px'
+  },
   linkActive: {
+    display: 'flex',
     padding: '12px 0px',
     margin: '0px 12px',
     cursor: 'pointer',
@@ -158,8 +163,9 @@ class Header extends Component {
     } = this.props;
 
     return (
-      <div className={ (window.location.pathname.includes(screen) || (screen ==='feeds' && window.location.pathname==='/')  )?classes.linkActive:classes.link } onClick={ () => { this.nav(screen) } }>
-        <Typography variant={'h3'} className={ `title` }>{ screen }</Typography>
+      <div className={ (window.location.pathname.includes(screen) || (screen ==='Streams' && window.location.pathname==='/')  ) ? classes.linkActive : classes.link } onClick={ () => { this.nav(screen) } }>
+        <img src={require('../../assets/headers/' + screen.toLowerCase() + '.png')} alt='' width={ 25 } height={ 25 } className={ classes.productIcon }/>
+        <Typography variant={'h2'} className={ `title` }>{ screen }</Typography>
       </div>
     )
   }
