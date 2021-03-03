@@ -56,17 +56,18 @@ class Store {
     return emitter.emit('StoreUpdated');
   };
 
-
-  //get pairs
-
-  // get hard-coded address to { decimals, name, icon }
-  // populate pair token info
-  // get missing pair token info
-    // retunr temp data
-
-  // get consult pricing
-  // get coingecko USD/ETH pricing
-
+  decoratePrice = (price, decimal) => {
+    price = price / (10 ** decimal);
+    if (price >= 10000) {
+      return price.toFixed(0);
+    } else if (price >= 100) {
+      return price.toFixed(2);
+    } else if (price >= 1) {
+      return price.toFixed(3);
+    } else {
+      return price.toFixed(4);
+    }
+  }
 
   getStreams = async (payload) => {
     try {
@@ -102,16 +103,16 @@ class Store {
         streamPopulated.address = stream
         streamPopulated.type = version
         let latestResult = await this._polulateLatestResult(streamsManagerContract, stream)
-        streamPopulated.lastPrice = (latestResult.price / (10 ** streamPopulated.decimal)).toFixed(2)
+        streamPopulated.lastPrice = this.decoratePrice(latestResult.price, streamPopulated.decimal)
         streamPopulated.lastUpdated = String(latestResult.timestamp)
         let twaps = await this._polulateTWAPResults(streamsManagerContract, stream)
-        streamPopulated.twap1h = (twaps.twap1h / (10 ** streamPopulated.decimal)).toFixed(2)
-        streamPopulated.twap2h = (twaps.twap2h / (10 ** streamPopulated.decimal)).toFixed(2)
-        streamPopulated.twap4h = (twaps.twap4h / (10 ** streamPopulated.decimal)).toFixed(2)
-        streamPopulated.twap6h = (twaps.twap6h / (10 ** streamPopulated.decimal)).toFixed(2)
-        streamPopulated.twap8h = (twaps.twap8h / (10 ** streamPopulated.decimal)).toFixed(2)
-        streamPopulated.twap12h = (twaps.twap12h / (10 ** streamPopulated.decimal)).toFixed(2)
-        streamPopulated.twap1d = (twaps.twap1d / (10 ** streamPopulated.decimal)).toFixed(2)
+        streamPopulated.twap1h = this.decoratePrice(twaps.twap1h, streamPopulated.decimal)
+        streamPopulated.twap2h = this.decoratePrice(twaps.twap2h, streamPopulated.decimal)
+        streamPopulated.twap4h = this.decoratePrice(twaps.twap4h, streamPopulated.decimal)
+        streamPopulated.twap6h = this.decoratePrice(twaps.twap6h, streamPopulated.decimal)
+        streamPopulated.twap8h = this.decoratePrice(twaps.twap8h, streamPopulated.decimal)
+        streamPopulated.twap12h = this.decoratePrice(twaps.twap12h, streamPopulated.decimal)
+        streamPopulated.twap1d = this.decoratePrice(twaps.twap1d, streamPopulated.decimal)
 
         if (callback) {
           callback(null, streamPopulated)
