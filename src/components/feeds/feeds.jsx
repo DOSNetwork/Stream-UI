@@ -276,14 +276,14 @@ class Feeds extends Component {
             <Typography variant='h3'>{ feed.lastPrice > 0 ? '$ ' + feed.lastPrice : 'N/A' } </Typography>
           </div>
         }
-        { feed.numPoints &&
+        { feed.num24hPoints &&
           <div className={ classes.pricePoint }>
-            <Typography variant='h3'>{ feed.numPoints } Data Points </Typography>
+            <Typography variant='h3'>{ feed.num24hPoints } Data in 24h</Typography>
           </div>
         }
         { feed.deviation &&
           <div className={ classes.pricePoint }>
-            <Typography variant='h3'>{ feed.deviation / 10 }% Update Threshold</Typography>
+            <Typography variant='h3'>±{ feed.deviation / 10 }% Update Threshold</Typography>
           </div>
         }
         { feed.twap1h &&

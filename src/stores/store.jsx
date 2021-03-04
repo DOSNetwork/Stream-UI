@@ -145,7 +145,7 @@ class Store {
         decimal: await streamsManagerContract.methods.decimal(streamAddr).call(),
         windowSize: await streamsManagerContract.methods.windowSize(streamAddr).call(),
         deviation: await streamsManagerContract.methods.deviation(streamAddr).call(),
-        numPoints: await streamsManagerContract.methods.numPoints(streamAddr).call(),
+        num24hPoints: await streamsManagerContract.methods.num24hPoints(streamAddr).call(),
       }
       // Assuming description in the format of 'BTC / USD'
       s.logoPrefix = s.description.substr(0, s.description.indexOf(' ')).toLowerCase()
@@ -158,7 +158,7 @@ class Store {
         decimal: null,
         windowSize: null,
         deviation: null,
-        numPoints: null,
+        num24hPoints: null,
         logoPrefix: null,
         error: ex
       }
