@@ -48,11 +48,11 @@ class Store {
   }
 
   getStore(index) {
-    return(this.store[index]);
+    return (this.store[index]);
   };
 
   setStore(obj) {
-    this.store = {...this.store, ...obj}
+    this.store = { ...this.store, ...obj }
     return emitter.emit('StoreUpdated');
   };
 
@@ -78,22 +78,21 @@ class Store {
       } else if (version === 'Stock') {
         // contractAddress = config.StockStreamsManagerAddress
       }
-      
+
       const streamsManagerContract = new web3HecoTest.eth.Contract(StreamsManagerABI, contractAddress)
       let streams = await streamsManagerContract.methods.streams().call()
-
-      if(!streams || streams.length === 1) {
+      if (!streams || streams.length === 1) {
         return emitter.emit(FEEDS_RETURNED)
       }
       streams = streams.slice(1);
 
       if (version === 'Coingecko') {
-        if(store.getStore('coingeckoFeeds').length === 0) {
+        if (store.getStore('coingeckoFeeds').length === 0) {
           store.setStore({ coingeckoFeeds: streams })
           emitter.emit(FEEDS_UPDATED)
         }
       } else if (version === 'Stock') {
-        if(store.getStore('stockFeeds').length === 0) {
+        if (store.getStore('stockFeeds').length === 0) {
           store.setStore({ stockFeeds: streams })
           emitter.emit(FEEDS_UPDATED)
         }
@@ -124,15 +123,15 @@ class Store {
           console.log(err)
         }
 
-        if(version === 'Coingecko') {
+        if (version === 'Coingecko') {
           store.setStore({ coingeckoFeeds: streamsData })
-        } else if (version === 'Stock'){
+        } else if (version === 'Stock') {
           store.setStore({ stockFeeds: streamsData })
         }
 
         emitter.emit(FEEDS_RETURNED)
       })
-    } catch(e) {
+    } catch (e) {
       console.log(e)
       return {}
     }
@@ -146,11 +145,25 @@ class Store {
         windowSize: await streamsManagerContract.methods.windowSize(streamAddr).call(),
         deviation: await streamsManagerContract.methods.deviation(streamAddr).call(),
         num24hPoints: await streamsManagerContract.methods.num24hPoints(streamAddr).call(),
+        // TODO load data from contract
+        // TODO rechat doc :https://github.com/recharts/recharts/blob/master/demo/component/LineChart.tsx
+        num24hData: [
+          { timestamp: '2019-04-11', price: 80.01 },
+          { timestamp: '2019-04-12', price: 96.63 },
+          { timestamp: '2019-04-13', price: 76.64 },
+          { timestamp: '2019-04-14', price: 81.89 },
+          { timestamp: '2019-04-15', price: 74.43 },
+          { timestamp: '2019-04-16', price: 80.01 },
+          { timestamp: '2019-04-17', price: 96.63 },
+          { timestamp: '2019-04-18', price: 76.64 },
+          { timestamp: '2019-04-19', price: 81.89 },
+          { timestamp: '2019-04-20', price: 74.43 },
+        ]
       }
       // Assuming description in the format of 'BTC / USD'
       s.logoPrefix = s.description.substr(0, s.description.indexOf(' ')).toLowerCase()
       return s
-    } catch(ex) {
+    } catch (ex) {
       console.log(ex)
       console.log(streamAddr)
       return {
@@ -160,7 +173,8 @@ class Store {
         deviation: null,
         num24hPoints: null,
         logoPrefix: null,
-        error: ex
+        error: ex,
+        num24hData: null
       }
     }
 
@@ -173,8 +187,8 @@ class Store {
         price: latestResult[0],
         timestamp: latestResult[1],
       }
-    } catch(e) {
-      return { 
+    } catch (e) {
+      return {
         price: 0,
         timestamp: 0,
       }
@@ -185,37 +199,37 @@ class Store {
     let twap1h, twap2h, twap4h, twap6h, twap8h, twap12h, twap1d;
     try {
       twap1h = await streamsManagerContract.methods.TWAP1Hour(streamAddr).call()
-    } catch(e) {
+    } catch (e) {
       twap1h = 0
     }
     try {
       twap2h = await streamsManagerContract.methods.TWAP2Hour(streamAddr).call()
-    } catch(e) {
+    } catch (e) {
       twap2h = 0
     }
     try {
       twap4h = await streamsManagerContract.methods.TWAP4Hour(streamAddr).call()
-    } catch(e) {
+    } catch (e) {
       twap4h = 0
     }
     try {
       twap6h = await streamsManagerContract.methods.TWAP6Hour(streamAddr).call()
-    } catch(e) {
+    } catch (e) {
       twap6h = 0
     }
     try {
       twap8h = await streamsManagerContract.methods.TWAP8Hour(streamAddr).call()
-    } catch(e) {
+    } catch (e) {
       twap8h = 0
     }
     try {
       twap12h = await streamsManagerContract.methods.TWAP12Hour(streamAddr).call()
-    } catch(e) {
+    } catch (e) {
       twap12h = 0
     }
     try {
       twap1d = await streamsManagerContract.methods.TWAP1Day(streamAddr).call()
-    } catch(e) {
+    } catch (e) {
       twap1d = 0
     }
     return {
