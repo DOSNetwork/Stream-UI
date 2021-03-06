@@ -2,23 +2,26 @@ import React, { Component } from "react";
 import * as moment from 'moment';
 import { withStyles } from '@material-ui/core/styles';
 import {
-  Typography,
-  CircularProgress
+  Typography
 } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-
+import Modal from '@material-ui/core/Modal';
 import Store from "../../stores";
 import { colors } from '../../theme'
 import config from "../../stores/config"
-
+import {
+  LineChart, Line, XAxis, YAxis, Tooltip
+} from 'recharts';
 import {
   GET_FEEDS,
   FEEDS_RETURNED,
   FEEDS_UPDATED,
 } from '../../constants'
 
+const modalWidth = 800;
+const modalHeight = 400;
 const styles = theme => ({
   root: {
     flex: 1,
@@ -118,6 +121,24 @@ const styles = theme => ({
     width: '150px',
     marginBottom: '6px',
     marginTop: '12px'
+  },
+  chatWrapper: {
+    backgroundColor: '#fff',
+    width: `${modalWidth}px`,
+    height: `${modalHeight}px`,
+    border: '2px solid #c9c7c7',
+    borderRadius: '10px',
+    padding: '10px'
+  },
+  chatWrapperTitle: {
+    marginBottom: '40px',
+    fontWeight: 'bold',
+    fontSize: '16px'
+  },
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 })
 
@@ -137,8 +158,10 @@ class Feeds extends Component {
       coingeckoFeeds: coingeckoFeeds,
       stockFeeds: stockFeeds,
       feeds: [...coingeckoFeeds, ...stockFeeds],
-      feedFilter: null,
-
+      feedFilter: 'Coingecko',
+      currentPriceHistoryData: null,
+      currentTokenPair: '',
+      priceHistoryModal: false
     }
 
     dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Coingecko' } })
@@ -154,7 +177,6 @@ class Feeds extends Component {
     emitter.removeListener(FEEDS_UPDATED, this.feedsReturned);
     emitter.removeListener(FEEDS_RETURNED, this.feedsReturned);
   };
-
   feedsReturned = () => {
     const coingeckoFeeds = store.getStore('coingeckoFeeds')
     const stockFeeds = store.getStore('stockFeeds')
@@ -182,9 +204,10 @@ class Feeds extends Component {
     const { classes } = this.props;
 
     return (
-      <div className={ classes.root }>
-        { this.renderFilters() }
-        { this.renderFeeds() }
+      <div className={classes.root}>
+        { this.renderFilters()}
+        { this.renderFeeds()}
+        {this.renderChat()}
       </div>
     )
   }
@@ -194,27 +217,27 @@ class Feeds extends Component {
     const { feedFilter } = this.state;
 
     return (
-      <div className={ classes.filters}>
+      <div className={classes.filters}>
         <ToggleButtonGroup
-          value={ feedFilter }
+          value={feedFilter}
           exclusive
-          onChange={ this.onFeedFilterChanged }
-          className={ classes.feedFilters }
-          >
+          onChange={this.onFeedFilterChanged}
+          className={classes.feedFilters}
+        >
           <ToggleButton value="Coingecko" >
-            <img src={require('../../assets/meta-sources/coingecko-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon }/>
+            <img src={require('../../assets/meta-sources/coingecko-logo.png')} alt='' width={30} height={30} className={classes.productIcon} />
             <Typography variant='h3'>Crypto</Typography>
           </ToggleButton>
           <ToggleButton value="Stock">
-            <img src={require('../../assets/meta-sources/stock-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon } />
+            <img src={require('../../assets/meta-sources/stock-logo.png')} alt='' width={30} height={30} className={classes.productIcon} />
             <Typography variant='h3'>Stock</Typography>
           </ToggleButton>
           <ToggleButton value="Forex">
-            <img src={require('../../assets/meta-sources/forex-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon } />
+            <img src={require('../../assets/meta-sources/forex-logo.png')} alt='' width={30} height={30} className={classes.productIcon} />
             <Typography variant='h3'>Forex</Typography>
           </ToggleButton>
           <ToggleButton value="Commodity">
-            <img src={require('../../assets/meta-sources/commodity-logo.png')} alt='' width={ 30 } height={ 30 } className={ classes.productIcon } />
+            <img src={require('../../assets/meta-sources/commodity-logo.png')} alt='' width={30} height={30} className={classes.productIcon} />
             <Typography variant='h3'>Commodity</Typography>
           </ToggleButton>
 
@@ -229,12 +252,12 @@ class Feeds extends Component {
       feedFilter
     } = this.state
 
-    if(!feeds) {
+    if (!feeds) {
       return <div></div>
     }
 
     return feeds.filter((feed) => {
-      if(!feedFilter) {
+      if (!feedFilter) {
         return true
       }
 
@@ -248,90 +271,131 @@ class Feeds extends Component {
     const { classes } = this.props;
 
     return (
-      <div className={ classes.feedContainer } key={ index } onClick={ feed.address ? () => { this.feedClicked(feed) } : null }>
-        { (!feed.description || !feed.lastPrice || !feed.decimal || !feed.twap1h) && <div className={ classes.skeletonFrame }>
-            <Skeleton className={ classes.skeletonTitle } height={ 30 } />
-            <Skeleton className={ classes.skeleton } />
-            <Skeleton className={ classes.skeleton } />
-            <Skeleton className={ classes.skeleton } />
-            <Skeleton className={ classes.skeletonTitle } height={ 30 } />
-            <Skeleton className={ classes.skeleton } />
-            <Skeleton className={ classes.skeleton } />
-            <Skeleton className={ classes.skeleton } />
-            <Skeleton className={ classes.skeleton } />
-            <Skeleton className={ classes.skeleton } />
-            <Skeleton className={ classes.skeleton } />
-            <Skeleton className={ classes.skeleton } />
-            <Skeleton className={ classes.skeletonTitle } />
-          </div>
+      <div className={classes.feedContainer} key={index}>
+        { (!feed.description || !feed.lastPrice || !feed.decimal || !feed.twap1h) && <div className={classes.skeletonFrame}>
+          <Skeleton className={classes.skeletonTitle} height={30} />
+          <Skeleton className={classes.skeleton} />
+          <Skeleton className={classes.skeleton} />
+          <Skeleton className={classes.skeleton} />
+          <Skeleton className={classes.skeletonTitle} height={30} />
+          <Skeleton className={classes.skeleton} />
+          <Skeleton className={classes.skeleton} />
+          <Skeleton className={classes.skeleton} />
+          <Skeleton className={classes.skeleton} />
+          <Skeleton className={classes.skeleton} />
+          <Skeleton className={classes.skeleton} />
+          <Skeleton className={classes.skeleton} />
+          <Skeleton className={classes.skeletonTitle} />
+        </div>
         }
         { feed.description && feed.logoPrefix &&
-          <div className={ classes.pair }>
-            <img src={require('../../assets/cryptos/' + feed.logoPrefix + '.png')} alt={ feed.logoPrefix } width={ 30 } height={ 30 } className={ classes.productIcon }/>
-            <Typography variant='h2'>{ feed.description }</Typography>
+          <div className={classes.pair} onClick={feed.address ? () => { this.feedClicked(feed) } : null}>
+            <img src={require('../../assets/cryptos/' + feed.logoPrefix + '.png')} alt={feed.logoPrefix} width={30} height={30} className={classes.productIcon} />
+            <Typography variant='h2'>{feed.description}</Typography>
           </div>
         }
         { feed.lastPrice &&
-          <div className={ classes.pricePoint }>
-            <Typography variant='h3'>{ feed.lastPrice > 0 ? '$ ' + feed.lastPrice : 'N/A' } </Typography>
+          <div className={classes.pricePoint}>
+            <Typography variant='h3'>{feed.lastPrice > 0 ? '$ ' + feed.lastPrice : 'N/A'} </Typography>
           </div>
         }
         { feed.num24hPoints &&
-          <div className={ classes.pricePoint }>
-            <Typography variant='h3'>{ feed.num24hPoints } Data in 24h</Typography>
+          <div className={classes.pricePoint}>
+            <Typography variant='h3'>{feed.num24hPoints} Data in 24h</Typography>
           </div>
         }
         { feed.deviation &&
-          <div className={ classes.pricePoint }>
-            <Typography variant='h3'>±{ feed.deviation / 10 }% Update Threshold</Typography>
+          <div className={classes.pricePoint}>
+            <Typography variant='h3'>±{feed.deviation / 10}% Update Threshold</Typography>
           </div>
         }
         { feed.twap1h &&
-          <div className={ classes.twapHead }>
+          <div className={classes.twapHead}>
             <Typography variant='h2'>TWAP Results</Typography>
           </div>
         }
         { feed.twap1h &&
-          <div className={ classes.twap }>
-            <Typography variant='h6'>1 hour TWAP: { feed.twap1h > 0 ? '$ ' + feed.twap1h : 'N/A' } </Typography>
+          <div className={classes.twap}>
+            <Typography variant='h6'>1 hour TWAP: {feed.twap1h > 0 ? '$ ' + feed.twap1h : 'N/A'} </Typography>
           </div>
         }
         { feed.twap2h &&
-          <div className={ classes.twap }>
-            <Typography variant='h6'>2 hour TWAP: { feed.twap2h > 0 ? '$ ' + feed.twap2h : 'N/A' } </Typography>
+          <div className={classes.twap}>
+            <Typography variant='h6'>2 hour TWAP: {feed.twap2h > 0 ? '$ ' + feed.twap2h : 'N/A'} </Typography>
           </div>
         }
         { feed.twap4h &&
-          <div className={ classes.twap }>
-            <Typography variant='h6'>4 hour TWAP: { feed.twap4h > 0 ? '$ ' + feed.twap4h : 'N/A' } </Typography>
+          <div className={classes.twap}>
+            <Typography variant='h6'>4 hour TWAP: {feed.twap4h > 0 ? '$ ' + feed.twap4h : 'N/A'} </Typography>
           </div>
         }
         { feed.twap6h &&
-          <div className={ classes.twap }>
-            <Typography variant='h6'>6 hour TWAP: { feed.twap6h > 0 ? '$ ' + feed.twap6h : 'N/A' } </Typography>
+          <div className={classes.twap}>
+            <Typography variant='h6'>6 hour TWAP: {feed.twap6h > 0 ? '$ ' + feed.twap6h : 'N/A'} </Typography>
           </div>
         }
         { feed.twap8h &&
-          <div className={ classes.twap }>
-            <Typography variant='h6'>8 hour TWAP: { feed.twap8h > 0 ? '$ ' + feed.twap8h : 'N/A' } </Typography>
+          <div className={classes.twap}>
+            <Typography variant='h6'>8 hour TWAP: {feed.twap8h > 0 ? '$ ' + feed.twap8h : 'N/A'} </Typography>
           </div>
         }
         { feed.twap12h &&
-          <div className={ classes.twap }>
-            <Typography variant='h6'>12 hour TWAP: { feed.twap12h > 0 ? '$ ' + feed.twap12h : 'N/A' } </Typography>
+          <div className={classes.twap}>
+            <Typography variant='h6'>12 hour TWAP: {feed.twap12h > 0 ? '$ ' + feed.twap12h : 'N/A'} </Typography>
           </div>
         }
         { feed.twap1d &&
-          <div className={ classes.twap }>
-            <Typography variant='h6'>1 Day TWAP: { feed.twap1d > 0 ? '$ ' + feed.twap1d : 'N/A' } </Typography>
+          <div className={classes.twap}>
+            <Typography variant='h6'>1 Day TWAP: {feed.twap1d > 0 ? '$ ' + feed.twap1d : 'N/A'} </Typography>
           </div>
         }
         { feed.lastUpdated &&
-          <div className={ classes.updated }>
-            <Typography variant='h6'>Last updated: { feed.lastUpdated > 0 ? moment(feed.lastUpdated*1000).fromNow() : 'N/A' }</Typography>
+          <div className={classes.updated}>
+            <Typography variant='h6'>Last updated: {feed.lastUpdated > 0 ? moment(feed.lastUpdated * 1000).fromNow() : 'N/A'}</Typography>
           </div>
         }
+
+        <div onClick={() => { this.openPriceHistoryModal(feed) }}>24h history data</div>
       </div>
+    )
+  }
+
+  openPriceHistoryModal = (feed) => {
+    this.setState({
+      currentPriceHistoryData: feed.num24hData,
+      currentTokenPair: feed.description,
+      priceHistoryModal: true
+    })
+  }
+
+  handleClose = () => {
+    this.setState({ priceHistoryModal: false });
+  };
+
+  renderChat = () => {
+    const { classes } = this.props;
+    const { currentPriceHistoryData, currentTokenPair, priceHistoryModal } = this.state
+    const height = modalHeight - 100;
+    const width = modalWidth - 60;
+    return (
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        className={classes.modal}
+        open={priceHistoryModal}
+        closeAfterTransition
+        onClose={this.handleClose}
+      >
+        <div className={classes.chatWrapper}>
+          <div className={classes.chatWrapperTitle}>{currentTokenPair} - 24h Price history</div>
+          <LineChart width={width} height={height} data={currentPriceHistoryData} syncMethod='index'>
+            <Line isAnimationActive={false} type="monotone" dataKey="price" stroke="#ff7300" />
+            <Tooltip />
+            <XAxis dataKey="timestamp" />
+            <YAxis />
+          </LineChart>
+        </div>
+      </Modal >
     )
   }
 }
