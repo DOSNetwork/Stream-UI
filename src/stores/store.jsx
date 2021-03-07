@@ -145,21 +145,16 @@ class Store {
         windowSize: await streamsManagerContract.methods.windowSize(streamAddr).call(),
         deviation: await streamsManagerContract.methods.deviation(streamAddr).call(),
         num24hPoints: await streamsManagerContract.methods.num24hPoints(streamAddr).call(),
-        // TODO load data from contract
         // TODO rechat doc :https://github.com/recharts/recharts/blob/master/demo/component/LineChart.tsx
-        num24hData: [
-          { timestamp: '2019-04-11', price: 80.01 },
-          { timestamp: '2019-04-12', price: 96.63 },
-          { timestamp: '2019-04-13', price: 76.64 },
-          { timestamp: '2019-04-14', price: 81.89 },
-          { timestamp: '2019-04-15', price: 74.43 },
-          { timestamp: '2019-04-16', price: 80.01 },
-          { timestamp: '2019-04-17', price: 96.63 },
-          { timestamp: '2019-04-18', price: 76.64 },
-          { timestamp: '2019-04-19', price: 81.89 },
-          { timestamp: '2019-04-20', price: 74.43 },
-        ]
+        last24hData: await streamsManagerContract.methods.last24hResults(streamAddr).call(),
       }
+      s.last24hData = s.last24hData.map((item) => {
+        return {
+          timestamp: item.timestamp,
+          price: this.decoratePrice(item.price, s.decimal),
+        };
+      })
+      console.log(s.last24hData);
       // Assuming description in the format of 'BTC / USD'
       s.logoPrefix = s.description.substr(0, s.description.indexOf(' ')).toLowerCase()
       return s
@@ -173,8 +168,8 @@ class Store {
         deviation: null,
         num24hPoints: null,
         logoPrefix: null,
+        last24hData: null,
         error: ex,
-        num24hData: null
       }
     }
 

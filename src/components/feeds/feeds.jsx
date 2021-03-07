@@ -362,7 +362,7 @@ class Feeds extends Component {
 
   openPriceHistoryModal = (feed) => {
     this.setState({
-      currentPriceHistoryData: feed.num24hData,
+      currentPriceHistoryData: feed.last24hData,
       currentTokenPair: feed.description,
       priceHistoryModal: true
     })

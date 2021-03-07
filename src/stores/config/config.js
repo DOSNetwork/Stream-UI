@@ -1,7 +1,7 @@
 const config = {
   provider: 'https://mainnet.infura.io/v3/211c5f35ed97405b86465c1d76502922',
   hecoTestProvider: 'https://http-testnet.hecochain.com',
-  CoingeckoStreamsManagerAddress: '0xeFC5cc56bf9a52acdb073c291382E815C78b5153',
+  CoingeckoStreamsManagerAddress: '0x51D657f6000190Ba785e30344E9987028c1CF025',
   explorerUrl: 'https://testnet.hecoinfo.com/',
 };
 
