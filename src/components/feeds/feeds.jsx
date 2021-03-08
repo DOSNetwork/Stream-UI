@@ -1,13 +1,12 @@
 import React, { Component } from "react";
 import * as moment from 'moment';
-import { withStyles } from '@material-ui/core/styles';
 import {
-  Typography
+  withStyles,
+  Typography,
+  Modal,
+  Button
 } from '@material-ui/core';
-import Skeleton from '@material-ui/lab/Skeleton';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import Modal from '@material-ui/core/Modal';
+import { ToggleButton, Skeleton, ToggleButtonGroup } from '@material-ui/lab';
 import Store from "../../stores";
 import { colors } from '../../theme'
 import config from "../../stores/config"
@@ -161,7 +160,8 @@ class Feeds extends Component {
       feedFilter: 'Coingecko',
       currentPriceHistoryData: null,
       currentTokenPair: '',
-      priceHistoryModal: false
+      priceHistoryModal: false,
+      priceAxis: [0, 0]
     }
 
     dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Coingecko' } })
@@ -354,8 +354,9 @@ class Feeds extends Component {
             <Typography variant='h6'>Last updated: {feed.lastUpdated > 0 ? moment(feed.lastUpdated * 1000).fromNow() : 'N/A'}</Typography>
           </div>
         }
-
-        <div onClick={() => { this.openPriceHistoryModal(feed) }}>24h history data</div>
+        <Button variant="contained" color="primary" onClick={() => { this.openPriceHistoryModal(feed) }}>
+          24h history data
+        </Button>
       </div>
     )
   }
@@ -364,7 +365,8 @@ class Feeds extends Component {
     this.setState({
       currentPriceHistoryData: feed.last24hData,
       currentTokenPair: feed.description,
-      priceHistoryModal: true
+      priceHistoryModal: true,
+      priceAxis: feed.priceAxis
     })
   }
 
@@ -374,7 +376,7 @@ class Feeds extends Component {
 
   renderChat = () => {
     const { classes } = this.props;
-    const { currentPriceHistoryData, currentTokenPair, priceHistoryModal } = this.state
+    const { currentPriceHistoryData, currentTokenPair, priceHistoryModal, priceAxis } = this.state
     const height = modalHeight - 100;
     const width = modalWidth - 60;
     return (
@@ -392,7 +394,7 @@ class Feeds extends Component {
             <Line isAnimationActive={false} type="monotone" dataKey="price" stroke="#ff7300" />
             <Tooltip />
             <XAxis dataKey="timestamp" />
-            <YAxis />
+            <YAxis type='number' yAxisId={0} domain={priceAxis} />
           </LineChart>
         </div>
       </Modal >
