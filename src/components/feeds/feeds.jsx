@@ -354,9 +354,14 @@ class Feeds extends Component {
             <Typography variant='h6'>Last updated: {feed.lastUpdated > 0 ? moment(feed.lastUpdated * 1000).fromNow() : 'N/A'}</Typography>
           </div>
         }
-        <Button variant="contained" color="primary" onClick={() => { this.openPriceHistoryModal(feed) }}>
-          24h history data
-        </Button>
+        {
+          feed.last24hData && feed.description &&
+          <div className={classes.twapHead}>
+            <Button variant="contained" color="primary" size="small" onClick={() => { this.openPriceHistoryModal(feed) }}>
+                View Chart
+            </Button>
+          </div>
+        }
       </div>
     )
   }
@@ -389,7 +394,7 @@ class Feeds extends Component {
         onClose={this.handleClose}
       >
         <div className={classes.chatWrapper}>
-          <div className={classes.chatWrapperTitle}>{currentTokenPair} - 24h Price history</div>
+          <div className={classes.chatWrapperTitle}>{currentTokenPair} - 24h Price History</div>
           <LineChart width={width} height={height} data={currentPriceHistoryData} syncMethod='index'>
             <Line isAnimationActive={false} type="monotone" dataKey="price" stroke="#ff7300" />
             <Tooltip />
