@@ -145,18 +145,22 @@ class Store {
         windowSize: await streamsManagerContract.methods.windowSize(streamAddr).call(),
         deviation: await streamsManagerContract.methods.deviation(streamAddr).call(),
         num24hPoints: await streamsManagerContract.methods.num24hPoints(streamAddr).call(),
-        // TODO rechat doc :https://github.com/recharts/recharts/blob/master/demo/component/LineChart.tsx
         last24hData: await streamsManagerContract.methods.last24hResults(streamAddr).call(),
       }
+      let maxPrice = 0
+      let minPrice = 9999999
       s.last24hData = s.last24hData.map((item) => {
+        const time = new Date(item.timestamp * 1000)
+        const price = this.decoratePrice(item.price, s.decimal)
+        maxPrice = price > maxPrice ? price : maxPrice;
+        minPrice = price < minPrice ? price : minPrice;
         return {
-          timestamp: item.timestamp,
-          price: this.decoratePrice(item.price, s.decimal),
+          timestamp: `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`,
+          price: price,
         };
       })
-      console.log(s.last24hData);
-      // Assuming description in the format of 'BTC / USD'
       s.logoPrefix = s.description.substr(0, s.description.indexOf(' ')).toLowerCase()
+      s.priceAxis = [minPrice, maxPrice];
       return s
     } catch (ex) {
       console.log(ex)
