@@ -75,6 +75,8 @@ class Store {
       if (version === 'Coingecko') {
         contractAddress = config.CoingeckoStreamsManagerAddress
       } else if (version === 'Stock') {
+        emitter.emit(FEEDS_RETURNED)
+        return
         // contractAddress = config.StockStreamsManagerAddress
       }
 
@@ -138,19 +140,26 @@ class Store {
 
   _polulateStreamData = async (streamsManagerContract, streamAddr) => {
     try {
-      let s = {
-        description: await streamsManagerContract.methods.description(streamAddr).call(),
-        decimal: await streamsManagerContract.methods.decimal(streamAddr).call(),
-        windowSize: await streamsManagerContract.methods.windowSize(streamAddr).call(),
-        deviation: await streamsManagerContract.methods.deviation(streamAddr).call(),
-        num24hPoints: await streamsManagerContract.methods.num24hPoints(streamAddr).call(),
-        last24hData: await streamsManagerContract.methods.last24hResults(streamAddr).call(),
-      }
+      let [
+        description,
+        decimal,
+        windowSize,
+        deviation,
+        num24hPoints,
+        last24hData
+      ] = await Promise.all([
+        streamsManagerContract.methods.description(streamAddr).call(),
+        streamsManagerContract.methods.decimal(streamAddr).call(),
+        streamsManagerContract.methods.windowSize(streamAddr).call(),
+        streamsManagerContract.methods.deviation(streamAddr).call(),
+        streamsManagerContract.methods.num24hPoints(streamAddr).call(),
+        streamsManagerContract.methods.last24hResults(streamAddr).call(),
+      ])
       let maxPrice = 0
       let minPrice = 9999999
-      s.last24hData = s.last24hData.map((item) => {
+      last24hData = last24hData.map((item) => {
         const time = new Date(item.timestamp * 1000)
-        const price = this.decoratePrice(item.price, s.decimal)
+        const price = this.decoratePrice(item.price, decimal)
         maxPrice = price > maxPrice ? price : maxPrice;
         minPrice = price < minPrice ? price : minPrice;
         return {
@@ -158,9 +167,18 @@ class Store {
           price: price,
         };
       })
-      s.logoPrefix = s.description.substr(0, s.description.indexOf(' ')).toLowerCase()
-      s.priceAxis = [minPrice, maxPrice];
-      return s
+      const logoPrefix = description.substr(0, description.indexOf(' ')).toLowerCase()
+      const priceAxis = [minPrice, maxPrice];
+      return {
+        description: description,
+        decimal: decimal,
+        windowSize: windowSize,
+        deviation: deviation,
+        num24hPoints: num24hPoints,
+        last24hData: last24hData,
+        logoPrefix: logoPrefix,
+        priceAxis: priceAxis
+      }
     } catch (ex) {
       console.log(ex)
       console.log(streamAddr)
@@ -170,8 +188,8 @@ class Store {
         windowSize: null,
         deviation: null,
         num24hPoints: null,
-        logoPrefix: null,
         last24hData: null,
+        logoPrefix: null,
         error: ex,
       }
     }
