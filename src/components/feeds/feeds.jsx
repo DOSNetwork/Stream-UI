@@ -391,7 +391,15 @@ class Feeds extends Component {
         <div className={classes.chatWrapper}>
           <div className={classes.chatWrapperTitle}>{currentTokenPair} - 24h Price history</div>
           <LineChart width={width} height={height} data={currentPriceHistoryData} syncMethod='index'>
-            <Line isAnimationActive={false} type="monotone" dataKey="price" stroke="#ff7300" />
+            <Line isAnimationActive={false} type="monotone" dataKey="price" stroke="#ff7300" dot={false} />
+            <Tooltip
+              wrapperStyle={{
+                borderColor: 'white',
+                boxShadow: '2px 2px 3px 0px rgb(204, 204, 204)',
+              }}
+              contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
+              labelStyle={{ fontWeight: 'bold', color: '#666666' }}
+            />
             <Tooltip />
             <XAxis dataKey="timestamp" />
             <YAxis type='number' yAxisId={0} domain={priceAxis} />
