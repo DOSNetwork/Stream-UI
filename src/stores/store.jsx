@@ -11,8 +11,7 @@ import { ERC20ABI } from "./abi/erc20ABI";
 import { StreamsManagerABI } from './abi/StreamsManagerABI'
 
 import Web3 from 'web3';
-const web3 = new Web3(config.provider)
-const web3HecoTest = new Web3(config.hecoTestProvider)
+const web3Heco = new Web3(config.hecoProvider)
 
 const rp = require('request-promise');
 
@@ -79,7 +78,7 @@ class Store {
         // contractAddress = config.StockStreamsManagerAddress
       }
 
-      const streamsManagerContract = new web3HecoTest.eth.Contract(StreamsManagerABI, contractAddress)
+      const streamsManagerContract = new web3Heco.eth.Contract(StreamsManagerABI, contractAddress)
       let streams = await streamsManagerContract.methods.streams().call()
       if (!streams || streams.length === 1) {
         return emitter.emit(FEEDS_RETURNED)
