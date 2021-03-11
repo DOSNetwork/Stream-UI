@@ -157,7 +157,6 @@ class Feeds extends Component {
       coingeckoFeeds: coingeckoFeeds,
       stockFeeds: stockFeeds,
       feeds: [...coingeckoFeeds, ...stockFeeds],
-      feedFilter: 'Coingecko',
       currentPriceHistoryData: null,
       currentTokenPair: '',
       priceHistoryModal: false,
@@ -207,7 +206,7 @@ class Feeds extends Component {
       <div className={classes.root}>
         { this.renderFilters()}
         { this.renderFeeds()}
-        {this.renderChat()}
+        { this.renderChat()}
       </div>
     )
   }
@@ -251,11 +250,10 @@ class Feeds extends Component {
       feeds,
       feedFilter
     } = this.state
-
     if (!feeds) {
       return <div></div>
     }
-
+    console.log(feedFilter)
     return feeds.filter((feed) => {
       if (!feedFilter) {
         return true
@@ -272,21 +270,23 @@ class Feeds extends Component {
 
     return (
       <div className={classes.feedContainer} key={index}>
-        { (!feed.description || !feed.lastPrice || !feed.decimal || !feed.twap1h) && <div className={classes.skeletonFrame}>
-          <Skeleton className={classes.skeletonTitle} height={30} />
-          <Skeleton className={classes.skeleton} />
-          <Skeleton className={classes.skeleton} />
-          <Skeleton className={classes.skeleton} />
-          <Skeleton className={classes.skeletonTitle} height={30} />
-          <Skeleton className={classes.skeleton} />
-          <Skeleton className={classes.skeleton} />
-          <Skeleton className={classes.skeleton} />
-          <Skeleton className={classes.skeleton} />
-          <Skeleton className={classes.skeleton} />
-          <Skeleton className={classes.skeleton} />
-          <Skeleton className={classes.skeleton} />
-          <Skeleton className={classes.skeletonTitle} />
-        </div>
+        { (!feed.description || !feed.lastPrice || !feed.num24hPoints || !feed.twap1h || !feed.last24hData) &&
+          <div className={classes.skeletonFrame}>
+            <Skeleton className={classes.skeletonTitle} height={20} />
+            <Skeleton className={classes.skeleton} />
+            <Skeleton className={classes.skeleton} />
+            <Skeleton className={classes.skeleton} />
+            <Skeleton className={classes.skeletonTitle} height={20} />
+            <Skeleton className={classes.skeleton} />
+            <Skeleton className={classes.skeleton} />
+            <Skeleton className={classes.skeleton} />
+            <Skeleton className={classes.skeleton} />
+            <Skeleton className={classes.skeleton} />
+            <Skeleton className={classes.skeleton} />
+            <Skeleton className={classes.skeleton} />
+            <Skeleton className={classes.skeletonTitle} height={20} />
+            <Skeleton className={classes.skeletonTitle} height={20} />
+          </div>
         }
         { feed.description && feed.logoPrefix &&
           <div className={classes.pair} onClick={feed.address ? () => { this.feedClicked(feed) } : null}>
@@ -396,7 +396,15 @@ class Feeds extends Component {
         <div className={classes.chatWrapper}>
           <div className={classes.chatWrapperTitle}>{currentTokenPair} - 24h Price History</div>
           <LineChart width={width} height={height} data={currentPriceHistoryData} syncMethod='index'>
-            <Line isAnimationActive={false} type="monotone" dataKey="price" stroke="#ff7300" />
+            <Line isAnimationActive={false} type="monotone" dataKey="price" stroke="#ff7300" dot={true} />
+            <Tooltip
+              wrapperStyle={{
+                borderColor: 'white',
+                boxShadow: '2px 2px 3px 0px rgb(204, 204, 204)',
+              }}
+              contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}
+              labelStyle={{ fontWeight: 'bold', color: '#666666' }}
+            />
             <Tooltip />
             <XAxis dataKey="timestamp" />
             <YAxis type='number' yAxisId={0} domain={priceAxis} />
