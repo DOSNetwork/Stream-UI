@@ -1,31 +1,28 @@
 
 import async from 'async';
-import config from "./config";
+import configs from "./config";
 import {
   GET_FEEDS,
   FEEDS_UPDATED,
   FEEDS_RETURNED,
+  SET_NETWORK
 } from '../constants';
 
-import { ERC20ABI } from "./abi/erc20ABI";
 import { StreamsManagerABI } from './abi/StreamsManagerABI'
-
 import Web3 from 'web3';
-const web3 = new Web3(config.provider)
-const web3HecoTest = new Web3(config.hecoTestProvider)
-
-const rp = require('request-promise');
 
 const Dispatcher = require('flux').Dispatcher;
 const Emitter = require('events').EventEmitter;
-
 const dispatcher = new Dispatcher();
 const emitter = new Emitter();
 
+let web3Test = null;
+let config = null;
 class Store {
   constructor() {
 
     this.store = {
+      network: 'heco',
       coingeckoFeeds: [
 
       ],
@@ -40,12 +37,23 @@ class Store {
           case GET_FEEDS:
             this.getStreams(payload);
             break;
+          case SET_NETWORK:
+            this.setNetwork(payload)
+            break;
           default:
             break;
         }
       }.bind(this)
     );
   }
+  setNetwork({ content }) {
+    const { network = 'heco' } = content
+    console.log('setNetwork: ', network);
+    config = configs[network]
+    web3Test = new Web3(config.hecoTestProvider)
+    this.store = { ...this.store, network: network }
+    return emitter.emit('StoreUpdated');
+  };
 
   getStore(index) {
     return (this.store[index]);
@@ -79,7 +87,11 @@ class Store {
         // contractAddress = config.StockStreamsManagerAddress
       }
 
-      const streamsManagerContract = new web3HecoTest.eth.Contract(StreamsManagerABI, contractAddress)
+      if (!contractAddress) {
+        console.log(`network:${store.getStore('network')},${version} contract object doesn't have address set yet, please set an address first.`)
+        return;
+      }
+      const streamsManagerContract = new web3Test.eth.Contract(StreamsManagerABI, contractAddress)
       let streams = await streamsManagerContract.methods.streams().call()
       if (!streams || streams.length === 1) {
         return emitter.emit(FEEDS_RETURNED)

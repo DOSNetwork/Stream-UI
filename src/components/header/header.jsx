@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { withRouter } from "react-router-dom";
 import { colors } from '../../theme'
 import { Typography } from '@material-ui/core'
-
+import Store from '../../stores'
 const styles = theme => ({
   root: {
     verticalAlign: 'top',
@@ -15,7 +15,7 @@ const styles = theme => ({
   },
   headerV2: {
     background: colors.white,
-    borderBottom: '1px solid '+colors.borderBlue,
+    borderBottom: '1px solid ' + colors.borderBlue,
     width: '100%',
     borderRadius: '0px',
     display: 'flex',
@@ -45,7 +45,7 @@ const styles = theme => ({
     cursor: 'pointer',
     '&:hover': {
       paddingBottom: '9px',
-      borderBottom: "3px solid "+colors.blue,
+      borderBottom: "3px solid " + colors.blue,
     },
   },
   title: {
@@ -60,7 +60,7 @@ const styles = theme => ({
     margin: '0px 12px',
     cursor: 'pointer',
     paddingBottom: '9px',
-    borderBottom: "3px solid "+colors.blue,
+    borderBottom: "3px solid " + colors.blue,
   },
   walletAddress: {
     padding: '12px',
@@ -70,14 +70,14 @@ const styles = theme => ({
     alignItems: 'center',
     cursor: 'pointer',
     '&:hover': {
-      border: "2px solid "+colors.borderBlue,
+      border: "2px solid " + colors.borderBlue,
       background: 'rgba(47, 128, 237, 0.1)'
     },
     [theme.breakpoints.down('sm')]: {
       display: 'flex',
       position: 'absolute',
       top: '90px',
-      border: "1px solid "+colors.borderBlue,
+      border: "1px solid " + colors.borderBlue,
       background: colors.white
     }
   },
@@ -111,7 +111,7 @@ const styles = theme => ({
     color: colors.background,
     fontWeight: 'bold',
     padding: '0px 12px',
-    borderRight: '2px solid '+colors.text,
+    borderRight: '2px solid ' + colors.text,
     cursor: 'pointer',
     '&:hover': {
       textDecoration: 'underline'
@@ -122,11 +122,11 @@ const styles = theme => ({
   },
   connectedDot: {
     borderRadius: '100px',
-    border: '8px solid '+colors.green,
+    border: '8px solid ' + colors.green,
     marginLeft: '12px'
   },
 });
-
+const store = Store.store
 class Header extends Component {
 
   constructor(props) {
@@ -142,15 +142,15 @@ class Header extends Component {
     } = this.props;
 
     return (
-      <div className={ classes.root }>
-        <div className={ classes.headerV2 }>
-          <div className={ classes.links }>
-            { this.renderLink('Streams') }
-            { this.renderLink('Contracts') }
-            { this.renderLink('Docs') }
-            { this.renderLink('Github') }
+      <div className={classes.root}>
+        <div className={classes.headerV2}>
+          <div className={classes.links}>
+            {this.renderLink('Streams')}
+            {this.renderLink('Contracts')}
+            {this.renderLink('Docs')}
+            {this.renderLink('Github')}
           </div>
-          <div className={ classes.account }>
+          <div className={classes.account}>
           </div>
         </div>
       </div>
@@ -163,23 +163,29 @@ class Header extends Component {
     } = this.props;
 
     return (
-      <div className={ (window.location.pathname.includes(screen) || (screen ==='Streams' && window.location.pathname==='/')  ) ? classes.linkActive : classes.link } onClick={ () => { this.nav(screen) } }>
-        <img src={require('../../assets/headers/' + screen.toLowerCase() + '.png')} alt='' width={ 25 } height={ 25 } className={ classes.productIcon }/>
-        <Typography variant={'h2'} className={ `title` }>{ screen }</Typography>
+      <div className={(window.location.pathname.includes(screen) || (screen === 'Streams' && window.location.pathname === '/')) ? classes.linkActive : classes.link} onClick={() => { this.nav(screen) }}>
+        <img src={require('../../assets/headers/' + screen.toLowerCase() + '.png')} alt='' width={25} height={25} className={classes.productIcon} />
+        <Typography variant={'h2'} className={`title`}>{screen}</Typography>
       </div>
     )
   }
 
   nav = (screen) => {
-    if(screen === 'Docs') {
+    let network = store.getStore('network')
+    if (screen === 'Docs') {
       window.open("https://dosnetwork.github.io/docs/#/contents/streams/start", "_blank")
       return
     }
-    if(screen === 'Github') {
+    if (screen === 'Github') {
       window.open("https://github.com/DOSNetwork/smart-contracts/tree/master/contracts", "_blank")
       return
     }
-    this.props.history.push('/'+screen)
+    if (screen === 'Streams') {
+      this.props.history.push(`/${network}/feeds`)
+    }
+    if (screen === 'Contracts') {
+      this.props.history.push(`/${network}/contracts`)
+    }
   }
 }
 

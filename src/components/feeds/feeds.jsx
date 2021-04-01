@@ -16,7 +16,7 @@ import {
 import {
   GET_FEEDS,
   FEEDS_RETURNED,
-  FEEDS_UPDATED,
+  FEEDS_UPDATED
 } from '../../constants'
 
 const modalWidth = 800;
@@ -358,7 +358,7 @@ class Feeds extends Component {
           feed.last24hData && feed.description &&
           <div className={classes.twapHead}>
             <Button variant="contained" color="primary" size="small" onClick={() => { this.openPriceHistoryModal(feed) }}>
-                View Chart
+              View Chart
             </Button>
           </div>
         }

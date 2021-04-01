@@ -1,18 +1,17 @@
 import React, { Component } from "react";
-import * as moment from 'moment';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton'
 
 import Store from "../../stores";
 import { colors } from '../../theme'
-import config from "../../stores/config";
-
+import configs from "../../stores/config";
 import {
   GET_FEEDS,
   FEEDS_RETURNED,
   FEEDS_UPDATED,
 } from '../../constants'
+
 
 const styles = theme => ({
   root: {
@@ -28,7 +27,7 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'column',
     width: '800px',
-    border: '1px solid '+colors.darkGray,
+    border: '1px solid ' + colors.darkGray,
     borderRadius: '10px',
     padding: '24px 40px'
   },
@@ -44,7 +43,7 @@ const styles = theme => ({
     flex: 1,
     cursor: 'pointer',
     '&:hover': {
-      borderBottom: "1px solid "+colors.blue,
+      borderBottom: "1px solid " + colors.blue,
     },
   },
   title: {
@@ -59,7 +58,7 @@ const styles = theme => ({
 const emitter = Store.emitter
 const dispatcher = Store.dispatcher
 const store = Store.store
-
+let config = null
 class Contracts extends Component {
 
   constructor(props) {
@@ -67,11 +66,12 @@ class Contracts extends Component {
 
     const coingeckoFeeds = store.getStore('coingeckoFeeds')
     const stockFeeds = store.getStore('stockFeeds')
-
+    const network = store.getStore('network')
+    config = configs[network]
     this.state = {
       coingeckoFeeds: coingeckoFeeds,
       stockFeeds: stockFeeds,
-      feeds: [ ...coingeckoFeeds, ...stockFeeds],
+      feeds: [...coingeckoFeeds, ...stockFeeds],
     }
 
     dispatcher.dispatch({ type: GET_FEEDS, content: { version: 'Coingecko' } })
@@ -95,7 +95,7 @@ class Contracts extends Component {
     this.setState({
       coingeckoFeeds: coingeckoFeeds,
       stockFeeds: stockFeeds,
-      feeds: [ ...coingeckoFeeds, ...stockFeeds],
+      feeds: [...coingeckoFeeds, ...stockFeeds],
     })
   }
 
@@ -107,15 +107,15 @@ class Contracts extends Component {
     const { classes } = this.props;
 
     return (
-      <div className={ classes.contractsContainer }>
-        <div className={ classes.contractContainer }>
-          <Typography variant='h3' className={ classes.contractName }>CoingeckoDataStreamsManager </Typography>
-          <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(config.CoingeckoStreamsManagerAddress) } }>{ config.CoingeckoStreamsManagerAddress }</Typography>
+      <div className={classes.contractsContainer}>
+        <div className={classes.contractContainer}>
+          <Typography variant='h3' className={classes.contractName}>CoingeckoDataStreamsManager </Typography>
+          <Typography variant='h3' className={classes.contractAddress} color='textSecondary' onClick={() => { this.contractClicked(config.CoingeckoStreamsManagerAddress) }}>{config.CoingeckoStreamsManagerAddress}</Typography>
         </div>
         {config.StockStreamsManagerAddress &&
-          <div className={ classes.contractContainer }>
-            <Typography variant='h3' className={ classes.contractName }>StockDataStreamsManager </Typography>
-            <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(config.StockStreamsManagerAddress) } }>{ config.StockStreamsManagerAddress }</Typography>
+          <div className={classes.contractContainer}>
+            <Typography variant='h3' className={classes.contractName}>StockDataStreamsManager </Typography>
+            <Typography variant='h3' className={classes.contractAddress} color='textSecondary' onClick={() => { this.contractClicked(config.StockStreamsManagerAddress) }}>{config.StockStreamsManagerAddress}</Typography>
           </div>
         }
       </div>
@@ -125,15 +125,15 @@ class Contracts extends Component {
   renderFeedContracts = () => {
     const { classes } = this.props;
     const { feeds } = this.state
-
     return (
-      <div className={ classes.contractsContainer }>
+      <div className={classes.contractsContainer}>
         {
           feeds && feeds.map((feed) => {
+            let key = typeof feed === 'string' ? feed : feed.address
             return (
-              <div className={ classes.contractContainer }>
-                { (feed && feed.description && feed.type) ? <Typography variant='h3' className={ classes.contractName }>{ feed.type } - { feed.description }</Typography> : <Skeleton className={ classes.skeleton } />  }
-                { (feed && feed.address) ? <Typography variant='h3' className={ classes.contractAddress }  color='textSecondary' onClick={ () => { this.contractClicked(feed.address) } }>{ feed.address }</Typography> : <Skeleton className={ classes.skeleton } /> }
+              <div className={classes.contractContainer} key={key}>
+                { (feed && feed.description && feed.type) ? <Typography variant='h3' className={classes.contractName}>{feed.type} - {feed.description}</Typography> : <Skeleton className={classes.skeleton} />}
+                { (feed && feed.address) ? <Typography variant='h3' className={classes.contractAddress} color='textSecondary' onClick={() => { this.contractClicked(feed.address) }}>{feed.address}</Typography> : <Skeleton className={classes.skeleton} />}
               </div>
             )
           })
@@ -146,11 +146,11 @@ class Contracts extends Component {
     const { classes } = this.props;
 
     return (
-      <div className={ classes.root }>
-        <Typography variant='h1' className={ classes.title }>StreamsManager Addresses</Typography>
-        { this.renderQuoteContracts() }
-        <Typography variant='h1' className={ classes.title }>Stream Addresses</Typography>
-        { this.renderFeedContracts() }
+      <div className={classes.root}>
+        <Typography variant='h1' className={classes.title}>StreamsManager Addresses</Typography>
+        { this.renderQuoteContracts()}
+        <Typography variant='h1' className={classes.title}>Stream Addresses</Typography>
+        { this.renderFeedContracts()}
       </div>
     )
   }
