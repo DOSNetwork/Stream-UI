@@ -5,6 +5,7 @@ import {
   GET_FEEDS,
   FEEDS_UPDATED,
   FEEDS_RETURNED,
+  ERROR_SELECTOR
 } from '../constants';
 
 import { ERC20ABI } from "./abi/erc20ABI";
@@ -249,13 +250,13 @@ class Store {
       twap1d = 0
     }
     return {
-      twap1h: twap1h,
-      twap2h: twap2h,
-      twap4h: twap4h,
-      twap6h: twap6h,
-      twap8h: twap8h,
-      twap12h: twap12h,
-      twap1d: twap1d,
+      twap1h: twap1h === ERROR_SELECTOR ? 0 : twap1h,
+      twap2h: twap2h === ERROR_SELECTOR ? 0 : twap2h,
+      twap4h: twap4h === ERROR_SELECTOR ? 0 : twap4h,
+      twap6h: twap6h === ERROR_SELECTOR ? 0 : twap6h,
+      twap8h: twap8h === ERROR_SELECTOR ? 0 : twap8h,
+      twap12h: twap12h === ERROR_SELECTOR ? 0 : twap12h,
+      twap1d: twap1d === ERROR_SELECTOR ? 0 : twap1d,
     }
   }
 
