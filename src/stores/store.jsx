@@ -160,7 +160,7 @@ class Store {
       let minPrice = 9999999
       last24hData = last24hData.map((item) => {
         const time = new Date(item.timestamp * 1000)
-        const price = this.decoratePrice(item.price, decimal)
+        const price = Number(this.decoratePrice(item.price, decimal))
         maxPrice = price > maxPrice ? price : maxPrice;
         minPrice = price < minPrice ? price : minPrice;
         return {
